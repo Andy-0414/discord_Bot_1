@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <% if(item){var dir = '..'}else{var dir = '.'} %>
+    <link rel="stylesheet" href=<%= dir %>/main.css>
+    <meta charset="UTF-8">
+    <title>Andy 강화</title>
+</head>
+<body>
+    <nav class="bar"><span class="title">Andy 강화</span><span class="user">Andy0414</span></nav>
+    <section class="list">
+        <% for(var i in list){ %>
+            <a class="item" href=<%= "/main/"+list[i].name %>><img src=<%= list[i].img %>> <%= list[i].name %>( <%= list[i].lv %> )</a>
+        <% } %>
+    </section>
+    <% if(item){ %>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
+        <section class="information"><%= item %>
+            <div class="chartBox" style="position: relative; height:30vh; width:30vw;float:right">
+                <canvas id="myChart" width="500px" height="500px"></canvas>
+            </div>
+            <article id="itemData" data-history=<%= item.history %>></article>
+        </section>
+        <script>
+            var itemName = window.location.pathname.split('/')[2]
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', 'http://58.145.101.15:3000/data/'+ itemName);
+            xhr.setRequestHeader('Content-type', "application/json");
+            xhr.send('');
+            xhr.addEventListener('load', () => {
+                var result = JSON.parse(xhr.responseText);
+
+                var ctx = document.getElementById("myChart");
+                var myChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: result.history,
+                        datasets: [{
+                            label: 'Level',
+                            data: result.history,
+                            backgroundColor: [
+                                'rgba(255, 99, 132, 0.2)'
+                            ],
+                            borderColor: [
+                                'rgba(255,99,132,1)'
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            yAxes: [{
+                                ticks: {
+                                    beginAtZero: true
+                                }
+                            }]
+                        }
+                    }
+                });
+            })
+            
+            </script>
+    <% } %>
+</body>
+</html>
